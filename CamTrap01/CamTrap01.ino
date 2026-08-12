@@ -12,6 +12,9 @@ const byte SW_ROT = 4;
 const byte FOCUS_BUTTON = 8;
 const byte SHUTTER_BUTTON = 9;
 
+const byte FOCUS_TRIG = 10;
+const byte SHUTTER_TRIG = 11;
+
 int counter = 0;    // keep a running tally of steps...
 int currentStateCLK;
 int lastStateCLK;
@@ -31,6 +34,9 @@ void setup() {
 
   pinMode(FOCUS_BUTTON,INPUT);
   pinMode(SHUTTER_BUTTON,INPUT);
+
+  pinMode(FOCUS_TRIG,OUTPUT);
+  pinMode(SHUTTER_TRIG,OUTPUT);
 
   // Read the initial state of A (CLK)
   lastStateCLK = digitalRead(CLK_ROT);
@@ -61,6 +67,12 @@ void loop() {
     Serial.println("Encoder Button Released");
     buttonPressed = false;
     //add trigger for focus and shutter
+    digitalWrite(FOCUS_TRIG,HIGH);
+    delay(2000);
+    digitalWrite(FOCUS_TRIG,LOW);
+    digitalWrite(SHUTTER_TRIG,HIGH);
+    delay(counter * 1000);
+    digitalWrite(SHUTTER_TRIG,LOW);
   }
 
   byte focus_setting;
@@ -69,7 +81,9 @@ void loop() {
   if (focus_setting == HIGH){
     Serial.println("Focus Pressed");
     //add trigger output for focus set to high
-    delay(200);
+    digitalWrite(FOCUS_TRIG,HIGH);
+    delay(2000);
+    digitalWrite(FOCUS_TRIG,LOW);
   }
 
   byte shutter_setting;
@@ -80,8 +94,10 @@ void loop() {
     Serial.print(counter);
     Serial.println(" seconds");
     //add trigger output for shutter
+    digitalWrite(SHUTTER_TRIG,HIGH);
     delay(counter * 1000);
     Serial.println("Shutter Complete");
+    digitalWrite(SHUTTER_TRIG,LOW);
   }
 }
 
@@ -100,19 +116,19 @@ void updateEncoder(){
     // I found I can either change the logic here, or swap the pins as well
     if (digitalRead(DT_ROT) == currentStateCLK) {
       //counter ++;
-      if (counter >= 5975){
+      if (counter >= 5995){
         counter = 6000;
       } else {
-        counter = counter + 25;
+        counter = counter + 5;
       }
      
     } else {
       // Encoder is rotating CCW so DECREASE counter by 1
       //counter --;
-      if (counter <= 25) {
+      if (counter <= 5) {
         counter = 0;
       } else {
-        counter = counter - 25;
+        counter = counter - 5;
       }
     }
    }
