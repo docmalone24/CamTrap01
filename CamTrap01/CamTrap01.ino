@@ -9,6 +9,9 @@ const byte CLK_ROT = 2;
 const byte DT_ROT = 3;
 const byte SW_ROT = 4;
 
+const byte FOCUS_BUTTON = 8;
+const byte SHUTTER_BUTTON = 9;
+
 int counter = 0;    // keep a running tally of steps...
 int currentStateCLK;
 int lastStateCLK;
@@ -25,6 +28,9 @@ void setup() {
   pinMode(CLK_ROT,INPUT);
   pinMode(DT_ROT,INPUT);
   pinMode(SW_ROT,INPUT_PULLUP);
+
+  pinMode(FOCUS_BUTTON,INPUT);
+  pinMode(SHUTTER_BUTTON,INPUT);
 
   // Read the initial state of A (CLK)
   lastStateCLK = digitalRead(CLK_ROT);
@@ -54,6 +60,28 @@ void loop() {
   if (buttonPressed && digitalRead(SW_ROT) == HIGH){
     Serial.println("Encoder Button Released");
     buttonPressed = false;
+    //add trigger for focus and shutter
+  }
+
+  byte focus_setting;
+  focus_setting = digitalRead(FOCUS_BUTTON);
+
+  if (focus_setting == HIGH){
+    Serial.println("Focus Pressed");
+    //add trigger output for focus set to high
+    delay(200);
+  }
+
+  byte shutter_setting;
+  shutter_setting = digitalRead(SHUTTER_BUTTON);
+
+  if (shutter_setting == HIGH){
+    Serial.print("Shutter Pressed for ");
+    Serial.print(counter);
+    Serial.println(" seconds");
+    //add trigger output for shutter
+    delay(counter * 1000);
+    Serial.println("Shutter Complete");
   }
 }
 
