@@ -94,10 +94,12 @@ void loop() {
     Serial.print(counter);
     Serial.println(" seconds");
     //add trigger output for shutter
+    digitalWrite(FOCUS_TRIG,HIGH);
     digitalWrite(SHUTTER_TRIG,HIGH);
     delay(counter * 1000);
     Serial.println("Shutter Complete");
     digitalWrite(SHUTTER_TRIG,LOW);
+    digitalWrite(FOCUS_TRIG,LOW);
   }
 }
 
@@ -116,19 +118,19 @@ void updateEncoder(){
     // I found I can either change the logic here, or swap the pins as well
     if (digitalRead(DT_ROT) == currentStateCLK) {
       //counter ++;
-      if (counter >= 5995){
-        counter = 6000;
+      if (counter >= 9575){
+        counter = 9600;
       } else {
-        counter = counter + 5;
+        counter = counter + 25;
       }
      
     } else {
       // Encoder is rotating CCW so DECREASE counter by 1
       //counter --;
-      if (counter <= 5) {
+      if (counter <= 25) {
         counter = 0;
       } else {
-        counter = counter - 5;
+        counter = counter - 25;
       }
     }
    }
