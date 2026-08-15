@@ -67,12 +67,7 @@ void loop() {
     Serial.println("Encoder Button Released");
     buttonPressed = false;
     //add trigger for focus and shutter
-    digitalWrite(FOCUS_TRIG,HIGH);
-    delay(2000);
-    digitalWrite(FOCUS_TRIG,LOW);
-    digitalWrite(SHUTTER_TRIG,HIGH);
-    delay(counter * 1000);
-    digitalWrite(SHUTTER_TRIG,LOW);
+    shutterRelease(counter);
   }
 
   byte focus_setting;
@@ -90,16 +85,14 @@ void loop() {
   shutter_setting = digitalRead(SHUTTER_BUTTON);
 
   if (shutter_setting == HIGH){
-    Serial.print("Shutter Pressed for ");
-    Serial.print(counter);
-    Serial.println(" seconds");
     //add trigger output for shutter
-    digitalWrite(FOCUS_TRIG,HIGH);
-    digitalWrite(SHUTTER_TRIG,HIGH);
-    delay(counter * 1000);
-    Serial.println("Shutter Complete");
-    digitalWrite(SHUTTER_TRIG,LOW);
-    digitalWrite(FOCUS_TRIG,LOW);
+    shutterRelease(counter);
+    // digitalWrite(FOCUS_TRIG,HIGH);
+    // digitalWrite(SHUTTER_TRIG,HIGH);
+    // delay(counter * 1000);
+    // Serial.println("Shutter Complete");
+    // digitalWrite(SHUTTER_TRIG,LOW);
+    // digitalWrite(FOCUS_TRIG,LOW);
   }
 }
 
@@ -137,4 +130,23 @@ void updateEncoder(){
  
   // Remember last CLK state to use on next interrupt...
   lastStateCLK = currentStateCLK;
+}
+
+void shutterRelease(int time){
+  cam_display.setBrightness(1);
+  Serial.print("Shutter Pressed for ");
+  Serial.print(time);
+  Serial.println(" seconds");
+  digitalWrite(SHUTTER_TRIG,HIGH);
+  digitalWrite(FOCUS_TRIG,HIGH);
+  for(int i = time; i > 0; i--){
+    // Serial.print("i value:");
+    // Serial.println(i);
+    cam_display.showNumberDec(i);
+    delay(967);
+ }
+  Serial.println("Shutter Complete");
+  digitalWrite(SHUTTER_TRIG,LOW);
+  digitalWrite(FOCUS_TRIG,LOW);
+  cam_display.setBrightness(7);
 }
